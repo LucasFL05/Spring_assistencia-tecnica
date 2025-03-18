@@ -1,12 +1,13 @@
 package com.cltech.assistencia_tecnica.service;
 
-import com.cltech.assistencia_tecnica.model.Dispositivo;
+import com.cltech.assistencia_tecnica.dto.DispositivoDTO;
 
 import java.util.List;
 
 public interface DispositivoService {
-    Dispositivo criarDispositivo(Dispositivo dispositivo);
-    Dispositivo buscarDispositivoPorId(Long id);
-    List<Dispositivo> listarDispositivos();
+    DispositivoDTO criarDispositivo(DispositivoDTO dispositivoDTO);
+    DispositivoDTO buscarDispositivoPorId(Long id);
+    List<DispositivoDTO> listarDispositivos();
+    DispositivoDTO atualizarDispositivo(Long id, DispositivoDTO dispositivoDTO);
     void deletarDispositivo(Long id);
 }

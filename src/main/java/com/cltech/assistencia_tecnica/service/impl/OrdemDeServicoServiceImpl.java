@@ -21,8 +21,7 @@ public class OrdemDeServicoServiceImpl implements OrdemDeServicoService {
 
     @Override
     public OrdemDeServico buscarOrdemPorId(Long id) {
-        return ordemDeServicoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ordem de serviço não encontrada com o ID: " + id));
+        return ordemDeServicoRepository.findById(id).orElseThrow(() -> new RuntimeException("Ordem de Serviço não encontrada"));
     }
 
     @Override
@@ -32,14 +31,13 @@ public class OrdemDeServicoServiceImpl implements OrdemDeServicoService {
 
     @Override
     public OrdemDeServico atualizarStatus(Long id, String novoStatus) {
-        OrdemDeServico ordem = buscarOrdemPorId(id);
-        ordem.setStatus(novoStatus);
-        return ordemDeServicoRepository.save(ordem);
+        OrdemDeServico ordemDeServico = buscarOrdemPorId(id);
+        ordemDeServico.setStatus(novoStatus);
+        return ordemDeServicoRepository.save(ordemDeServico);
     }
 
     @Override
     public void deletarOrdem(Long id) {
-        OrdemDeServico ordem = buscarOrdemPorId(id);
-        ordemDeServicoRepository.delete(ordem);
+        ordemDeServicoRepository.deleteById(id);
     }
 }

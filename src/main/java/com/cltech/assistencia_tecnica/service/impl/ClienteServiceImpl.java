@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ClienteServiceImpl implements ClienteService {
@@ -22,8 +21,7 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public Cliente buscarClientePorId(Long id) {
-        return clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado com o ID: " + id));
+        return clienteRepository.findById(id).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
     }
 
     @Override
@@ -33,16 +31,15 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public Cliente atualizarCliente(Long id, Cliente clienteAtualizado) {
-        Cliente clienteExistente = buscarClientePorId(id);
-        clienteExistente.setNome(clienteAtualizado.getNome());
-        clienteExistente.setEmail(clienteAtualizado.getEmail());
-        clienteExistente.setTelefone(clienteAtualizado.getTelefone());
-        return clienteRepository.save(clienteExistente);
+        Cliente cliente = buscarClientePorId(id);
+        cliente.setNome(clienteAtualizado.getNome());
+        cliente.setEmail(clienteAtualizado.getEmail());
+        cliente.setTelefone(clienteAtualizado.getTelefone());
+        return clienteRepository.save(cliente);
     }
 
     @Override
     public void deletarCliente(Long id) {
-        Cliente cliente = buscarClientePorId(id);
-        clienteRepository.delete(cliente);
+        clienteRepository.deleteById(id);
     }
 }
