@@ -1,14 +1,19 @@
 package com.cltech.assistencia_tecnica.dto;
 
 import com.cltech.assistencia_tecnica.model.Dispositivo;
+import com.cltech.assistencia_tecnica.service.ClienteService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Data
 public class DispositivoDTO {
+
+    @Autowired
+    private ClienteService clienteService;
 
     private Long id;
 
