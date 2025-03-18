@@ -7,13 +7,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Data
 public class DispositivoDTO {
-
-    @Autowired
-    private ClienteService clienteService;
 
     private Long id;
 
@@ -32,7 +28,7 @@ public class DispositivoDTO {
     @NotNull(message = "O cliente associado é obrigatório")
     private Long clienteId;
 
-    public Dispositivo toEntity() {
+    public Dispositivo toEntity(ClienteService clienteService) {
         ModelMapper modelMapper = new ModelMapper();
         Dispositivo dispositivo = modelMapper.map(this, Dispositivo.class);
         dispositivo.setCliente(clienteService.buscarClientePorId(this.getClienteId()));

@@ -2,8 +2,9 @@ package com.cltech.assistencia_tecnica.controller;
 
 import com.cltech.assistencia_tecnica.dto.OrdemDeServicoDTO;
 import com.cltech.assistencia_tecnica.model.OrdemDeServico;
-import com.cltech.assistencia_tecnica.service.OrdemDeServicoService;
+import com.cltech.assistencia_tecnica.service.ClienteService;
 import com.cltech.assistencia_tecnica.service.DispositivoService;
+import com.cltech.assistencia_tecnica.service.OrdemDeServicoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,9 @@ public class OrdemDeServicoController {
 
     @Autowired
     private DispositivoService dispositivoService;
+
+    @Autowired
+    private ClienteService clienteService;
 
     @PostMapping
     public ResponseEntity<OrdemDeServicoDTO> criarOrdemDeServico(@Valid @RequestBody OrdemDeServicoDTO ordemDeServicoDTO) {
@@ -72,7 +76,7 @@ public class OrdemDeServicoController {
         ordemDeServico.setStatus(dto.getStatus());
         ordemDeServico.setDataAbertura(dto.getDataAbertura());
         ordemDeServico.setDataConclusao(dto.getDataConclusao());
-        ordemDeServico.setDispositivo(dispositivoService.buscarDispositivoPorId(dto.getDispositivoId()).toEntity());
+        ordemDeServico.setDispositivo(dispositivoService.buscarDispositivoPorId(dto.getDispositivoId()).toEntity(clienteService));
         return ordemDeServico;
     }
 }
