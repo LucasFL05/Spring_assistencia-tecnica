@@ -9,6 +9,8 @@ import lombok.Data;
 import org.modelmapper.ModelMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.LocalDateTime;
+
 @Data
 public class OrdemDeServicoDTO {
 
@@ -22,9 +24,9 @@ public class OrdemDeServicoDTO {
     private String status;
 
     @NotNull(message = "A data de abertura é obrigatória")
-    private String dataAbertura;
+    private LocalDateTime dataAbertura;
 
-    private String dataConclusao;
+    private LocalDateTime dataConclusao;
 
     @NotNull(message = "O dispositivo associado é obrigatório")
     private Long dispositivoId;
@@ -32,6 +34,7 @@ public class OrdemDeServicoDTO {
     public OrdemDeServico toEntity(DispositivoService dispositivoService) {
         ModelMapper modelMapper = new ModelMapper();
         OrdemDeServico ordemDeServico = modelMapper.map(this, OrdemDeServico.class);
-        ordemDeServico.setDispositivo(new ModelMapper().map(dispositivoService.buscarDispositivoPorId(this.getDispositivoId()), Dispositivo.class));        return ordemDeServico;
+        ordemDeServico.setDispositivo(new ModelMapper().map(dispositivoService.buscarDispositivoPorId(this.getDispositivoId()), Dispositivo.class));
+        return ordemDeServico;
     }
 }
