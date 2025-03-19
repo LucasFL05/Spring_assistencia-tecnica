@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Data
 public class ClienteDTO {
-    
+
 
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
