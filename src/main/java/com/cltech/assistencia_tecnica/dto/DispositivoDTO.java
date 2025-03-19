@@ -2,6 +2,7 @@ package com.cltech.assistencia_tecnica.dto;
 
 import com.cltech.assistencia_tecnica.model.Dispositivo;
 import com.cltech.assistencia_tecnica.service.ClienteService;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -11,6 +12,7 @@ import org.modelmapper.ModelMapper;
 @Data
 public class DispositivoDTO {
 
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
     @NotBlank(message = "O tipo do dispositivo é obrigatório")
