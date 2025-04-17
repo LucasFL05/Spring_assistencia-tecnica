@@ -1,68 +1,68 @@
-# assistencia-tecnica
- Um sistema para gerenciar atendimentos, ordens de serviço, estoque de peças e histórico de reparos.
 
-# Diagrama de Casos de Uso
-Identifica os atores (usuários do sistema) e suas interações principais com o sistema.
-Atores principais:
+# Assistência Técnica - Backend
 
-Administrador: Gerencia usuários, estoque e relatórios.
-Técnico: Atualiza ordens de serviço.
-Cliente: Consulta o status do reparo.
-Casos de uso principais:
+Este é o backend do sistema de gestão para assistência técnica, desenvolvido com Java e Spring Boot. Ele oferece funcionalidades para gerenciar clientes, ordens de serviço, dispositivos e estoque, integrando com o banco de dados PostgreSQL.
 
-Gerenciar clientes: Cadastrar, alterar e excluir clientes.
-Registrar ordem de serviço: Criar e atualizar status de reparos.
-Gerenciar estoque: Cadastrar peças e controlar o estoque.
-Emitir relatórios: Gerar relatórios de serviços e faturamento.
-Processar pagamentos: Integrar com gateways de pagamento.
-Consultar status: Cliente verifica o status da ordem de serviço.
+## Funcionalidades
 
-# Diagrama de Classes
-Modela as principais classes do sistema e suas relações.
+- **Gestão de Dispositivos:** Criação, leitura, atualização e exclusão de dispositivos.
+- **Gestão de Clientes:** Cadastro, atualização e exclusão de clientes.
+- **Ordens de Serviço:** Criação e atualização de ordens de serviço.
 
-Exemplo inicial de classes:
-Cliente
-Atributos: id, nome, telefone, email, endereco
-Métodos: consultarStatus()
-Dispositivo
-Atributos: id, tipo, modelo, descricao
-Métodos: associarCliente()
-OrdemDeServico
-Atributos: id, dataAbertura, dataConclusao, status, custo
-Métodos: alterarStatus(), calcularCusto()
-Estoque
-Atributos: id, nomePeca, quantidade, preco
-Métodos: atualizarQuantidade(), calcularValorTotal()
-Pagamento
-Atributos: id, valor, status, formaPagamento
-Métodos: processarPagamento()
-Relatorio
-Atributos: id, tipo, dados
-Métodos: gerar()
+## Tecnologias
 
-# Diagrama de Sequência
-Detalha como as classes interagem em um fluxo.
-Exemplo: Fluxo para criar uma ordem de serviço.
+- **Backend:** Java 21, Spring Boot
+- **Banco de Dados:** PostgreSQL
+- **Modelagem:** ModelMapper para conversões entre entidades e DTOs
+- **Docker:** Utilizado para contêinerizar o ambiente, facilitando o uso do banco de dados.
 
-Técnico registra dados da OS no frontend.
-Sistema valida os dados e cria a OS no banco.
-Estoque verifica disponibilidade de peças.
-Sistema calcula o custo total e retorna para o técnico.
-Cliente recebe notificação da criação da OS.
-4. Diagrama de Componentes
-Organiza os principais módulos e como eles se integram.
+## Frontend
 
-# Componentes principais:
+O frontend do sistema de Assistência Técnica pode ser encontrado no seguinte repositório:
 
-Frontend (JavaScript):
-Interface para clientes, técnicos e administradores.
-Backend (Java + Spring Boot):
-Microsserviços para ordens de serviço, estoque e pagamentos.
-Banco de Dados (PostgreSQL):
-Armazena informações de clientes, dispositivos e ordens de serviço.
-Cache (Redis):
-Gerencia sessões e autenticação.
-Gateway de Pagamento:
-Processa pagamentos de ordens de serviço.
-Monitoramento (ELK Stack, Dynatrace):
-Garante disponibilidade e performance.
+[Frontend - Assistência Técnica](https://github.com/LucasFL05/Angular_assistencia-tecnica/tree/main)
+
+## Como Rodar o Backend
+
+1. **Clone o repositório:**
+
+   ```bash
+   git clone https://github.com/LucasFL05/assistencia-tecnica.git
+   ```
+
+2. **Instale as dependências do Maven:**
+
+   Navegue até o diretório do backend e execute:
+
+   ```bash
+   mvn install
+   ```
+
+3. **Suba o banco de dados com Docker (opcional):**
+
+   Caso queira rodar o banco de dados via Docker, utilize o comando:
+
+   ```bash
+   docker-compose up
+   ```
+
+4. **Execute o Backend:**
+
+   Inicie o servidor Spring Boot:
+
+   ```bash
+   mvn spring-boot:run
+   ```
+
+## Estrutura do Backend
+
+O backend é organizado da seguinte forma:
+
+1. **Controller:** Define os endpoints para interação com o sistema.
+2. **Service:** Lógica de negócios, como criação, atualização e exclusão de entidades.
+3. **Repository:** Interface para persistência de dados no banco PostgreSQL.
+4. **DTO (Data Transfer Object):** Representação de dados a serem transferidos entre as camadas da aplicação.
+
+## Contribuições
+
+Sinta-se à vontade para contribuir para este projeto. Para isso, crie uma nova branch para suas modificações e envie um pull request.
