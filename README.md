@@ -66,3 +66,8 @@ O backend é organizado da seguinte forma:
 ## Contribuições
 
 Sinta-se à vontade para contribuir para este projeto. Para isso, crie uma nova branch para suas modificações e envie um pull request.
+
+## Licença
+
+Este projeto está sob a [Licença MIT](LICENSE).
+
