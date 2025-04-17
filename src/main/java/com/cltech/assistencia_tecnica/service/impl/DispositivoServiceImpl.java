@@ -33,9 +33,9 @@ public class DispositivoServiceImpl implements DispositivoService {
 
     @Override
     public DispositivoDTO buscarDispositivoPorId(Long id) {
-        Dispositivo dispositivo = dispositivoRepository.findById(id)
+        return  dispositivoRepository.findById(id)
+                .map(this::convertToDTO)
                 .orElseThrow(() -> new RuntimeException("Dispositivo não encontrado com o ID: " + id));
-        return convertToDTO(dispositivo);
     }
 
     @Override

@@ -5,8 +5,7 @@ import com.cltech.assistencia_tecnica.service.DispositivoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,17 +16,17 @@ import java.util.List;
 @Tag(name = "Dispositivo", description = "Endpoints for managing dispositivos")
 public class DispositivoController {
 
-    @Autowired
-    private DispositivoService dispositivoService;
+    private final DispositivoService dispositivoService;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    public DispositivoController(DispositivoService dispositivoService) {
+        this.dispositivoService = dispositivoService;
+    }
 
     @PostMapping
     @Operation(summary = "Create a new dispositivo")
     public ResponseEntity<DispositivoDTO> criarDispositivo(@Valid @RequestBody DispositivoDTO dispositivoDTO) {
         DispositivoDTO novoDispositivo = dispositivoService.criarDispositivo(dispositivoDTO);
-        return ResponseEntity.ok(novoDispositivo);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novoDispositivo);
     }
 
     @GetMapping("/{id}")

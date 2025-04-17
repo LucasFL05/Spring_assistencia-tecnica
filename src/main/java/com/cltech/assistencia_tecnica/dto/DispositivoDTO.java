@@ -1,7 +1,6 @@
 package com.cltech.assistencia_tecnica.dto;
 
-import com.cltech.assistencia_tecnica.model.Dispositivo;
-import com.cltech.assistencia_tecnica.service.ClienteService;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,11 +28,4 @@ public class DispositivoDTO {
 
     @NotNull(message = "O cliente associado é obrigatório")
     private Long clienteId;
-
-    public Dispositivo toEntity(ClienteService clienteService) {
-        ModelMapper modelMapper = new ModelMapper();
-        Dispositivo dispositivo = modelMapper.map(this, Dispositivo.class);
-        dispositivo.setCliente(clienteService.buscarClientePorId(this.getClienteId()));
-        return dispositivo;
-    }
 }

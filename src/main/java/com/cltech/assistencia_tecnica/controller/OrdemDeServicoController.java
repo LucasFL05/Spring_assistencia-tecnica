@@ -64,27 +64,4 @@ public class OrdemDeServicoController {
         ordemDeServicoService.deletarOrdem(id);
         return ResponseEntity.noContent().build();
     }
-
-
-    private OrdemDeServicoDTO convertToDTO(OrdemDeServico ordemDeServico) {
-        OrdemDeServicoDTO dto = new OrdemDeServicoDTO();
-        dto.setId(ordemDeServico.getId());
-        dto.setDescricaoProblema(ordemDeServico.getDescricaoProblema());
-        dto.setStatus(ordemDeServico.getStatus());
-        dto.setDataAbertura(ordemDeServico.getDataAbertura());
-        dto.setDataConclusao(ordemDeServico.getDataConclusao());
-        dto.setDispositivoId(ordemDeServico.getDispositivo().getId());
-        return dto;
-    }
-
-    private OrdemDeServico convertToEntity(OrdemDeServicoDTO dto) {
-        OrdemDeServico ordemDeServico = new OrdemDeServico();
-        ordemDeServico.setId(dto.getId());
-        ordemDeServico.setDescricaoProblema(dto.getDescricaoProblema());
-        ordemDeServico.setStatus(dto.getStatus());
-        ordemDeServico.setDataAbertura(dto.getDataAbertura());
-        ordemDeServico.setDataConclusao(dto.getDataConclusao());
-        ordemDeServico.setDispositivo(dispositivoService.buscarDispositivoPorId(dto.getDispositivoId()).toEntity(clienteService));
-        return ordemDeServico;
-    }
 }
