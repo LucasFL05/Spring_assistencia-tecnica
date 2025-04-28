@@ -2,13 +2,11 @@ package com.cltech.assistencia_tecnica.mapper;
 
 import com.cltech.assistencia_tecnica.dto.OrdemDeServicoDTO;
 import com.cltech.assistencia_tecnica.model.OrdemDeServico;
+import com.cltech.assistencia_tecnica.model.StatusOrdemServico;
 import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface OrdemDeServicoMapper {
-
-    OrdemDeServicoMapper INSTANCE = Mappers.getMapper(OrdemDeServicoMapper.class);
 
     @Mapping(source = "dispositivo.id", target = "dispositivoId")
     @Mapping(source = "status", target = "status", qualifiedByName = "statusToString")
@@ -19,14 +17,14 @@ public interface OrdemDeServicoMapper {
     OrdemDeServico toEntity(OrdemDeServicoDTO dto);
 
     @Named("statusToString")
-    static String mapStatusToString(Enum<?> status) {
+    static String mapStatusToString(StatusOrdemServico status) {
         return status.name();
     }
 
     @Named("stringToStatus")
-    static Enum<?> mapStringToStatus(String status) {
+    static StatusOrdemServico mapStringToStatus(String status) {
         try {
-            return Enum.valueOf(com.cltech.assistencia_tecnica.model.StatusOrdemServico.class, status.toUpperCase());
+            return StatusOrdemServico.valueOf(status.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Status inválido: " + status);
         }
