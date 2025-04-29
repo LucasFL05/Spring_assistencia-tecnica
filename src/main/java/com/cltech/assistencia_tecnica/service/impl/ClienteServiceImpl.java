@@ -1,9 +1,9 @@
 package com.cltech.assistencia_tecnica.service.impl;
 
+import com.cltech.assistencia_tecnica.exception.EntidadeNaoEncontradaException;
 import com.cltech.assistencia_tecnica.model.Cliente;
 import com.cltech.assistencia_tecnica.repository.ClienteRepository;
 import com.cltech.assistencia_tecnica.service.ClienteService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +23,7 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public Cliente buscarClientePorId(Long id) {
         return clienteRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado com o ID: " + id));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente não encontrado com o ID: " + id));
     }
 
     @Override
