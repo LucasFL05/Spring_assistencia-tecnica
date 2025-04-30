@@ -1,13 +1,9 @@
 package com.cltech.assistencia_tecnica.dto;
 
-import com.cltech.assistencia_tecnica.model.Dispositivo;
-import com.cltech.assistencia_tecnica.model.OrdemDeServico;
-import com.cltech.assistencia_tecnica.service.DispositivoService;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import org.modelmapper.ModelMapper;
-import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 
@@ -30,11 +26,4 @@ public class OrdemDeServicoDTO {
 
     @NotNull(message = "O dispositivo associado é obrigatório")
     private Long dispositivoId;
-
-    public OrdemDeServico toEntity(DispositivoService dispositivoService) {
-        ModelMapper modelMapper = new ModelMapper();
-        OrdemDeServico ordemDeServico = modelMapper.map(this, OrdemDeServico.class);
-        ordemDeServico.setDispositivo(new ModelMapper().map(dispositivoService.buscarDispositivoPorId(this.getDispositivoId()), Dispositivo.class));
-        return ordemDeServico;
-    }
 }

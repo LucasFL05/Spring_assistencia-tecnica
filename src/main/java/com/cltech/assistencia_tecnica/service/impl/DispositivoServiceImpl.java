@@ -5,7 +5,8 @@ import com.cltech.assistencia_tecnica.model.Dispositivo;
 import com.cltech.assistencia_tecnica.repository.DispositivoRepository;
 import com.cltech.assistencia_tecnica.service.ClienteService;
 import com.cltech.assistencia_tecnica.service.DispositivoService;
-import org.modelmapper.ModelMapper;
+import com.cltech.assistencia_tecnica.mapper.DispositivoMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,56 +23,55 @@ public class DispositivoServiceImpl implements DispositivoService {
     private ClienteService clienteService;
 
     @Autowired
-    private ModelMapper modelMapper;
+    private DispositivoMapper dispositivoMapper;
 
     @Override
     public DispositivoDTO criarDispositivo(DispositivoDTO dispositivoDTO) {
-        Dispositivo dispositivo = convertToEntity(dispositivoDTO);
+        Dispositivo dispositivo = dispositivoMapper.dispositivoDTOToDispositivo(dispositivoDTO);
         Dispositivo novoDispositivo = dispositivoRepository.save(dispositivo);
-        return convertToDTO(novoDispositivo);
+        return dispositivoMapper.dispositivoToDispositivoDTO(novoDispositivo);
     }
 
     @Override
     public DispositivoDTO buscarDispositivoPorId(Long id) {
-        return  dispositivoRepository.findById(id)
-                .map(this::convertToDTO)
-                .orElseThrow(() -> new RuntimeException("Dispositivo não encontrado com o ID: " + id));
+        Dispositivo dispositivo = dispositivoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Dispositivo não encontrado com o ID: " + id));
+        return dispositivoMapper.dispositivoToDispositivoDTO(dispositivo);
     }
 
     @Override
     public List<DispositivoDTO> listarDispositivos() {
         List<Dispositivo> dispositivos = dispositivoRepository.findAll();
         return dispositivos.stream()
-                .map(this::convertToDTO)
+                .map(dispositivoMapper::dispositivoToDispositivoDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
     public DispositivoDTO atualizarDispositivo(Long id, DispositivoDTO dispositivoDTO) {
         Dispositivo dispositivoExistente = dispositivoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Dispositivo não encontrado com o ID: " + id));
-        Dispositivo dispositivoAtualizado = convertToEntity(dispositivoDTO);
+                .orElseThrow(() -> new EntityNotFoundException("Dispositivo não encontrado com o ID: " + id));
+        Dispositivo dispositivoAtualizado = dispositivoMapper.dispositivoDTOToDispositivo(dispositivoDTO);
         dispositivoAtualizado.setId(dispositivoExistente.getId());
         dispositivoRepository.save(dispositivoAtualizado);
-        return convertToDTO(dispositivoAtualizado);
+        return dispositivoMapper.dispositivoToDispositivoDTO(dispositivoAtualizado);
     }
 
     @Override
     public void deletarDispositivo(Long id) {
         Dispositivo dispositivo = dispositivoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Dispositivo não encontrado com o ID: " + id));
-        dispositivoRepository.delete(dispositivo);
+                .orElseThrow(() -> new EntityNotFoundException("Dispositivo não encontrado com o ID: " + id));
+
+        if (dispositivo.getOrdensDeServico().isEmpty()) {
+            dispositivoRepository.delete(dispositivo);
+        } else {
+            throw new RuntimeException("Não é possível excluir o dispositivo, pois existem ordens de serviço associadas.");
+        }
     }
 
-    private DispositivoDTO convertToDTO(Dispositivo dispositivo) {
-        DispositivoDTO dto = modelMapper.map(dispositivo, DispositivoDTO.class);
-        dto.setClienteId(dispositivo.getCliente().getId());
-        return dto;
-    }
-
-    private Dispositivo convertToEntity(DispositivoDTO dto) {
-        Dispositivo dispositivo = modelMapper.map(dto, Dispositivo.class);
-        dispositivo.setCliente(clienteService.buscarClientePorId(dto.getClienteId()));
-        return dispositivo;
+    @Override
+    public Dispositivo buscarEntidadeDispositivoPorId(Long id) {
+        return dispositivoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Dispositivo não encontrado com o ID: " + id));
     }
 }

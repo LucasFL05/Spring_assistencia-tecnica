@@ -3,6 +3,7 @@ package com.cltech.assistencia_tecnica.service.impl;
 import com.cltech.assistencia_tecnica.model.Cliente;
 import com.cltech.assistencia_tecnica.repository.ClienteRepository;
 import com.cltech.assistencia_tecnica.service.ClienteService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,8 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public Cliente buscarClientePorId(Long id) {
-        return clienteRepository.findById(id).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+        return clienteRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado com o ID: " + id));
     }
 
     @Override
@@ -31,15 +33,18 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public Cliente atualizarCliente(Long id, Cliente clienteAtualizado) {
-        Cliente cliente = buscarClientePorId(id);
-        cliente.setNome(clienteAtualizado.getNome());
-        cliente.setEmail(clienteAtualizado.getEmail());
-        cliente.setTelefone(clienteAtualizado.getTelefone());
-        return clienteRepository.save(cliente);
+        Cliente clienteExistente = buscarClientePorId(id);
+
+        clienteExistente.setNome(clienteAtualizado.getNome());
+        clienteExistente.setEmail(clienteAtualizado.getEmail());
+        clienteExistente.setTelefone(clienteAtualizado.getTelefone());
+
+        return clienteRepository.save(clienteExistente);
     }
 
     @Override
     public void deletarCliente(Long id) {
-        clienteRepository.deleteById(id);
+        Cliente cliente = buscarClientePorId(id);
+        clienteRepository.delete(cliente);
     }
 }

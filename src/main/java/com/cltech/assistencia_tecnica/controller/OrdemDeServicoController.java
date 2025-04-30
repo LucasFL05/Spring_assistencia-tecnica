@@ -1,65 +1,56 @@
 package com.cltech.assistencia_tecnica.controller;
 
 import com.cltech.assistencia_tecnica.dto.OrdemDeServicoDTO;
-import com.cltech.assistencia_tecnica.model.OrdemDeServico;
-import com.cltech.assistencia_tecnica.service.ClienteService;
-import com.cltech.assistencia_tecnica.service.DispositivoService;
 import com.cltech.assistencia_tecnica.service.OrdemDeServicoService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/ordens")
+@Tag(name = "Service Order", description = "Endpoints for managing service orders")
 public class OrdemDeServicoController {
 
     @Autowired
     private OrdemDeServicoService ordemDeServicoService;
 
-    @Autowired
-    private DispositivoService dispositivoService;
-
-    @Autowired
-    private ClienteService clienteService;
-
-
     @PostMapping
-    @Operation(summary = "Create a new ordem de serviço")
-    public ResponseEntity<OrdemDeServicoDTO> criarOrdemDeServico(@Valid @RequestBody OrdemDeServicoDTO ordemDeServicoDTO) {
-        OrdemDeServico ordemDeServico = convertToEntity(ordemDeServicoDTO);
-        OrdemDeServico novaOrdem = ordemDeServicoService.criarOrdemDeServico(ordemDeServico);
-        return ResponseEntity.ok(convertToDTO(novaOrdem));
+    @Operation(summary = "Create a new service order")
+    public ResponseEntity<OrdemDeServicoDTO> criarOrdemDeServico(@Valid @RequestBody OrdemDeServicoDTO dto) {
+        OrdemDeServicoDTO novaOrdem = ordemDeServicoService.criarOrdemDeServico(dto);
+        return ResponseEntity.ok(novaOrdem);
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get an ordem de serviço by ID")
+    @Operation(summary = "Retrieve a service order by ID")
     public ResponseEntity<OrdemDeServicoDTO> buscarOrdemPorId(@PathVariable Long id) {
-        OrdemDeServico ordem = ordemDeServicoService.buscarOrdemPorId(id);
-        return ResponseEntity.ok(convertToDTO(ordem));
+        OrdemDeServicoDTO ordemDTO = ordemDeServicoService.buscarOrdemPorId(id);
+        return ResponseEntity.ok(ordemDTO);
     }
 
     @GetMapping
-    @Operation(summary = "List all ordens de serviço")
+    @Operation(summary = "List all service orders")
     public ResponseEntity<List<OrdemDeServicoDTO>> listarOrdens() {
-        List<OrdemDeServico> ordens = ordemDeServicoService.listarOrdens();
-        List<OrdemDeServicoDTO> ordensDTO = ordens.stream().map(this::convertToDTO).collect(Collectors.toList());
-        return ResponseEntity.ok(ordensDTO);
+        List<OrdemDeServicoDTO> ordens = ordemDeServicoService.listarOrdens();
+        return ResponseEntity.ok(ordens);
     }
 
     @PutMapping("/{id}/status")
-    @Operation(summary = "Update the status of an ordem de serviço by ID")
-    public ResponseEntity<OrdemDeServicoDTO> atualizarStatus(@PathVariable Long id, @RequestBody String novoStatus) {
-        OrdemDeServico ordemAtualizada = ordemDeServicoService.atualizarStatus(id, novoStatus);
-        return ResponseEntity.ok(convertToDTO(ordemAtualizada));
+    @Operation(summary = "Update the status of a service order")
+    public ResponseEntity<OrdemDeServicoDTO> atualizarStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        String novoStatus = body.get("status");
+        OrdemDeServicoDTO ordemAtualizada = ordemDeServicoService.atualizarStatus(id, novoStatus);
+        return ResponseEntity.ok(ordemAtualizada);
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete an ordem de serviço by ID")
+    @Operation(summary = "Delete a service order by ID")
     public ResponseEntity<Void> deletarOrdem(@PathVariable Long id) {
         ordemDeServicoService.deletarOrdem(id);
         return ResponseEntity.noContent().build();

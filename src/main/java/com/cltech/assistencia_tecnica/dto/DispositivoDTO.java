@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.modelmapper.ModelMapper;
 
 @Data
 public class DispositivoDTO {
@@ -27,5 +26,5 @@ public class DispositivoDTO {
     private String modelo;
 
     @NotNull(message = "O cliente associado é obrigatório")
-    private Long clienteId;
+    private ClienteDTO cliente;
 }
