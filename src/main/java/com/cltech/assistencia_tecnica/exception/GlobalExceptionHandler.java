@@ -1,11 +1,14 @@
 package com.cltech.assistencia_tecnica.exception;
 
+import com.cltech.assistencia_tecnica.exception.base.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +27,21 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, request.getRequestURI(), null);
     }
 
+    @ExceptionHandler(OperacaoNaoPermitidaException.class)
+    public ResponseEntity<ErroResponse> handleOperacaoNaoPermitida(OperacaoNaoPermitidaException ex, HttpServletRequest request) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.FORBIDDEN, request.getRequestURI(), null);
+    }
+
+    @ExceptionHandler(RequisicaoInvalidaException.class)
+    public ResponseEntity<ErroResponse> handleRequisicaoInvalida(RequisicaoInvalidaException ex, HttpServletRequest request) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, request.getRequestURI(), null);
+    }
+
+    @ExceptionHandler(ConflitoDeDadosException.class)
+    public ResponseEntity<ErroResponse> handleConflitoDeDados(ConflitoDeDadosException ex, HttpServletRequest request) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.CONFLICT, request.getRequestURI(), null);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErroResponse> handleValidacao(MethodArgumentNotValidException ex, HttpServletRequest request) {
         List<String> erros = ex.getBindingResult().getFieldErrors().stream()
@@ -33,9 +51,23 @@ public class GlobalExceptionHandler {
         return buildErrorResponse("Erro de validação", HttpStatus.BAD_REQUEST, request.getRequestURI(), erros);
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErroResponse> handleConstraintViolation(ConstraintViolationException ex, HttpServletRequest request) {
+        List<String> detalhes = ex.getConstraintViolations().stream()
+                .map(v -> v.getPropertyPath() + ": " + v.getMessage())
+                .collect(Collectors.toList());
+
+        return buildErrorResponse("Violação de restrição", HttpStatus.BAD_REQUEST, request.getRequestURI(), detalhes);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErroResponse> handleOutrasExcecoes(Exception ex, HttpServletRequest request) {
         return buildErrorResponse("Erro interno no servidor", HttpStatus.INTERNAL_SERVER_ERROR, request.getRequestURI(), List.of(ex.getMessage()));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErroResponse> handleViolacaoDeIntegridade(DataIntegrityViolationException ex, HttpServletRequest request) {
+        return buildErrorResponse("Violação de integridade de dados", HttpStatus.CONFLICT, request.getRequestURI(), List.of(ex.getMostSpecificCause().getMessage()));
     }
 
     private ResponseEntity<ErroResponse> buildErrorResponse(String mensagem, HttpStatus status, String path, List<String> detalhes) {

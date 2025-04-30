@@ -1,4 +1,4 @@
-package com.cltech.assistencia_tecnica.exception;
+package com.cltech.assistencia_tecnica.exception.base;
 
 public class RegraNegocioException extends RuntimeException {
     public RegraNegocioException(String mensagem) {
