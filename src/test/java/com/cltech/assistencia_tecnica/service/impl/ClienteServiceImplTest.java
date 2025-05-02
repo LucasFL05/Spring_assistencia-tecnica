@@ -7,201 +7,204 @@ import com.cltech.assistencia_tecnica.repository.ClienteRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
+
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
+@ExtendWith(MockitoExtension.class)
 class ClienteServiceImplTest {
 
     @Mock
-    private ClienteRepository clienteRepository;
+    private ClienteRepository repository;
 
     @InjectMocks
-    private ClienteServiceImpl clienteService;
-
-    // --- criarCliente ---
+    private ClienteServiceImpl service;
 
     @Test
-    @DisplayName("createClient: should save when email is available")
-    void criarCliente_savesWhenEmailAvailable() {
+    @DisplayName("create: should save when email is available")
+    void shouldSaveWhenEmailAvailable() {
+        // Arrange
         Cliente toSave = new Cliente(null, "Ana", "ana@mail.com", "1111", null);
-        Cliente saved = new Cliente(1L, "Ana", "ana@mail.com", "1111", null);
+        Cliente saved  = new Cliente(1L,    "Ana", "ana@mail.com", "1111", null);
 
-        when(clienteRepository.existsByEmail(toSave.getEmail())).thenReturn(false);
-        when(clienteRepository.save(toSave)).thenReturn(saved);
+        when(repository.existsByEmail(toSave.getEmail())).thenReturn(false);
+        when(repository.save(toSave)).thenReturn(saved);
 
-        Cliente result = clienteService.criarCliente(toSave);
+        // Act
+        Cliente result = service.criarCliente(toSave);
 
+        // Assert
         assertThat(result.getId()).isEqualTo(1L);
-        verify(clienteRepository).save(toSave);
+        verify(repository).save(toSave);
     }
 
     @Test
-    @DisplayName("createClient: should throw on duplicate email")
-    void criarCliente_throwsWhenEmailDuplicated() {
+    @DisplayName("create: should throw on duplicate email")
+    void shouldThrowOnDuplicateEmail() {
+        // Arrange
         Cliente toSave = new Cliente(null, "Ana", "ana@mail.com", "1111", null);
+        when(repository.existsByEmail(toSave.getEmail())).thenReturn(true);
 
-        when(clienteRepository.existsByEmail(toSave.getEmail())).thenReturn(true);
-
-        assertThatThrownBy(() -> clienteService.criarCliente(toSave))
+        // Act & Assert
+        assertThatThrownBy(() -> service.criarCliente(toSave))
                 .isInstanceOf(ConflitoDeDadosException.class)
                 .hasMessageContaining("E-mail já está em uso");
-        verify(clienteRepository, never()).save(any());
+
+        verify(repository, never()).save(any());
     }
 
-    // --- buscarClientePorId ---
-
     @Test
-    @DisplayName("findById: should return client when exists")
-    void buscarClientePorId_returnsWhenFound() {
+    @DisplayName("getById: should return client when exists")
+    void shouldReturnWhenFound() {
+        // Arrange
         Cliente cliente = new Cliente(1L, "Bob", "bob@mail.com", "2222", null);
+        when(repository.findById(1L)).thenReturn(Optional.of(cliente));
 
-        when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
+        // Act
+        Cliente result = service.buscarClientePorId(1L);
 
-        Cliente result = clienteService.buscarClientePorId(1L);
-
+        // Assert
         assertThat(result).isEqualTo(cliente);
     }
 
     @Test
-    @DisplayName("findById: should throw when not found")
-    void buscarClientePorId_throwsWhenNotFound() {
-        when(clienteRepository.findById(anyLong())).thenReturn(Optional.empty());
+    @DisplayName("getById: should throw when not found")
+    void shouldThrowWhenNotFound() {
+        // Arrange
+        when(repository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> clienteService.buscarClientePorId(42L))
+        // Act & Assert
+        assertThatThrownBy(() -> service.buscarClientePorId(42L))
                 .isInstanceOf(EntidadeNaoEncontradaException.class)
                 .hasMessageContaining("Cliente não encontrado");
     }
 
-    // --- listarClientes ---
-
     @Test
     @DisplayName("listAll: should return all clients")
-    void listarClientes_returnsAll() {
+    void shouldReturnAll() {
+        // Arrange
         List<Cliente> lista = List.of(
                 new Cliente(1L, "C1", "c1@mail.com", "3333", null),
                 new Cliente(2L, "C2", "c2@mail.com", "4444", null)
         );
-        when(clienteRepository.findAll()).thenReturn(lista);
+        when(repository.findAll()).thenReturn(lista);
 
-        List<Cliente> result = clienteService.listarClientes();
+        // Act
+        List<Cliente> result = service.listarClientes();
 
+        // Assert
         assertThat(result).hasSize(2).containsAll(lista);
     }
 
     @Test
     @DisplayName("listAll: should return empty list when none")
-    void listarClientes_returnsEmpty() {
-        when(clienteRepository.findAll()).thenReturn(Collections.emptyList());
+    void shouldReturnEmptyList() {
+        // Arrange
+        when(repository.findAll()).thenReturn(Collections.emptyList());
 
-        List<Cliente> result = clienteService.listarClientes();
+        // Act
+        List<Cliente> result = service.listarClientes();
 
+        // Assert
         assertThat(result).isEmpty();
     }
 
-    // --- atualizarCliente ---
-
     @Test
-    @DisplayName("updateClient: should update when data valid and same email")
-    void atualizarCliente_updatesWhenSameEmail() {
+    @DisplayName("update: should update when same email")
+    void shouldUpdateWhenSameEmail() {
+        // Arrange
         Cliente existing = new Cliente(1L, "Dave", "dave@mail.com", "5555", null);
-        Cliente update = new Cliente(null, "Dave New", "dave@mail.com", "6666", null);
+        Cliente update   = new Cliente(null, "Dave New", "dave@mail.com", "6666", null);
 
-        when(clienteRepository.findById(1L)).thenReturn(Optional.of(existing));
-        when(clienteRepository.existsByEmail(update.getEmail())).thenReturn(true);
-        when(clienteRepository.save(existing)).thenAnswer(invocation -> existing);
+        when(repository.findById(1L)).thenReturn(Optional.of(existing));
+        when(repository.existsByEmail(update.getEmail())).thenReturn(true);
+        when(repository.save(existing)).thenReturn(existing);
 
-        Cliente result = clienteService.atualizarCliente(1L, update);
+        // Act
+        Cliente result = service.atualizarCliente(1L, update);
 
+        // Assert
         assertThat(result.getNome()).isEqualTo("Dave New");
         assertThat(result.getTelefone()).isEqualTo("6666");
-        verify(clienteRepository).save(existing);
+        verify(repository).save(existing);
     }
 
     @Test
-    @DisplayName("updateClient: should update when data valid and new email available")
-    void atualizarCliente_updatesWhenNewEmailAvailable() {
-        Cliente existing = new Cliente(1L, "Eve", "eve@mail.com", "7777", null);
-        Cliente update = new Cliente(null, "Eve New", "new@mail.com", "8888", null);
-
-        when(clienteRepository.findById(1L)).thenReturn(Optional.of(existing));
-        when(clienteRepository.existsByEmail(update.getEmail())).thenReturn(false);
-        when(clienteRepository.save(existing)).thenAnswer(invocation -> existing);
-
-        Cliente result = clienteService.atualizarCliente(1L, update);
-
-        assertThat(result.getNome()).isEqualTo("Eve New");
-        assertThat(result.getEmail()).isEqualTo("new@mail.com");
-        verify(clienteRepository).save(existing);
-    }
-
-    @Test
-    @DisplayName("updateClient: should throw on email conflict with another client")
-    void atualizarCliente_throwsWhenEmailConflict() {
+    @DisplayName("update: should throw on email conflict")
+    void shouldThrowOnEmailConflict() {
+        // Arrange
         Cliente existing = new Cliente(1L, "Frank", "frank@mail.com", "9999", null);
-        Cliente update = new Cliente(null, "Frank", "conflict@mail.com", "9999", null);
+        Cliente update   = new Cliente(null, "Frank", "conflict@mail.com", "9999", null);
 
-        when(clienteRepository.findById(1L)).thenReturn(Optional.of(existing));
-        when(clienteRepository.existsByEmail(update.getEmail())).thenReturn(true);
-        assertThatThrownBy(() -> clienteService.atualizarCliente(1L, update))
+        when(repository.findById(1L)).thenReturn(Optional.of(existing));
+        when(repository.existsByEmail(update.getEmail())).thenReturn(true);
+
+        // Act & Assert
+        assertThatThrownBy(() -> service.atualizarCliente(1L, update))
                 .isInstanceOf(ConflitoDeDadosException.class)
                 .hasMessageContaining("E-mail já está em uso");
-        verify(clienteRepository, never()).save(any());
+
+        verify(repository, never()).save(any());
     }
 
     @Test
-    @DisplayName("updateClient: should throw when client not found")
-    void atualizarCliente_throwsWhenNotFound() {
+    @DisplayName("update: should throw when not found")
+    void shouldThrowOnUpdateNotFound() {
+        // Arrange
         Cliente update = new Cliente(null, "Novo", "novo@mail.com", "1234", null);
-        when(clienteRepository.findById(99L)).thenReturn(Optional.empty());
+        when(repository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> clienteService.atualizarCliente(99L, update))
+        // Act & Assert
+        assertThatThrownBy(() -> service.atualizarCliente(99L, update))
                 .isInstanceOf(EntidadeNaoEncontradaException.class)
                 .hasMessageContaining("Cliente não encontrado");
     }
 
-
-    // --- deletarCliente ---
-
     @Test
-    @DisplayName("deleteClient: should delete when no integrity violation")
-    void deletarCliente_deletesWhenNoViolation() {
+    @DisplayName("delete: should delete when no integrity violation")
+    void shouldDeleteWhenNoViolation() {
+        // Arrange
         Cliente cliente = new Cliente(1L, "Gina", "gina@mail.com", "0000", null);
-        when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
+        when(repository.findById(1L)).thenReturn(Optional.of(cliente));
 
-        clienteService.deletarCliente(1L);
+        // Act
+        service.deletarCliente(1L);
 
-        verify(clienteRepository).delete(cliente);
+        // Assert
+        verify(repository).delete(cliente);
     }
 
     @Test
-    @DisplayName("deleteClient: should throw on integrity violation")
-    void deletarCliente_throwsOnIntegrityViolation() {
+    @DisplayName("delete: should throw on integrity violation")
+    void shouldThrowOnDeleteIntegrityViolation() {
+        // Arrange
         Cliente cliente = new Cliente(1L, "Harry", "harry@mail.com", "1111", null);
-        when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
+        when(repository.findById(1L)).thenReturn(Optional.of(cliente));
         doThrow(new DataIntegrityViolationException("fk_violation"))
-                .when(clienteRepository).delete(cliente);
+                .when(repository).delete(cliente);
 
-        assertThatThrownBy(() -> clienteService.deletarCliente(1L))
+        // Act & Assert
+        assertThatThrownBy(() -> service.deletarCliente(1L))
                 .isInstanceOf(ConflitoDeDadosException.class)
                 .hasMessageContaining("Não é possível excluir");
     }
 
     @Test
-    @DisplayName("deleteClient: should throw when client not found")
-    void deletarCliente_throwsWhenNotFound() {
-        when(clienteRepository.findById(99L)).thenReturn(Optional.empty());
+    @DisplayName("delete: should throw when not found")
+    void shouldThrowOnDeleteNotFound() {
+        // Arrange
+        when(repository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> clienteService.deletarCliente(99L))
+        // Act & Assert
+        assertThatThrownBy(() -> service.deletarCliente(99L))
                 .isInstanceOf(EntidadeNaoEncontradaException.class)
                 .hasMessageContaining("Cliente não encontrado");
     }

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -44,7 +45,7 @@ public class Dispositivo {
     private Cliente cliente;
 
     @OneToMany(mappedBy = "dispositivo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrdemDeServico> ordensDeServico;
+    private List<OrdemDeServico> ordensDeServico = new ArrayList<>();
 
     public void addOrdemDeServico(OrdemDeServico ordemDeServico) {
         ordensDeServico.add(ordemDeServico);

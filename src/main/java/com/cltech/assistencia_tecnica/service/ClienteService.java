@@ -10,4 +10,6 @@ public interface ClienteService {
     List<Cliente> listarClientes();
     Cliente atualizarCliente(Long id, Cliente clienteAtualizado);
     void deletarCliente(Long id);
+
+    Cliente buscarEntidadePorId(Long id);
 }

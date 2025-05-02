@@ -27,8 +27,7 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public Cliente buscarClientePorId(Long id) {
-        return clienteRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente não encontrado com o ID: " + id));
+        return clienteRepository.findById(id).orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente não encontrado com o ID: " + id));
     }
 
     @Override
@@ -60,11 +59,13 @@ public class ClienteServiceImpl implements ClienteService {
 
     private void validarEmailDisponivel(String email, Long idAtual) {
         boolean emailEmUso = clienteRepository.existsByEmail(email);
-        if (emailEmUso && (idAtual == null ||
-                !clienteRepository.findById(idAtual)
-                        .map(c -> c.getEmail().equals(email))
-                        .orElse(false))) {
+        if (emailEmUso && (idAtual == null || !clienteRepository.findById(idAtual).map(c -> c.getEmail().equals(email)).orElse(false))) {
             throw new ConflitoDeDadosException("E-mail já está em uso por outro cliente.");
         }
+    }
+
+    @Override
+    public Cliente buscarEntidadePorId(Long id) {
+        return clienteRepository.findById(id).orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente não encontrado com o ID: " + id));
     }
 }
