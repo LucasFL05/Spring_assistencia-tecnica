@@ -24,6 +24,7 @@ public class OrdemDeServicoServiceImpl implements OrdemDeServicoService {
 
     @Autowired
     private DispositivoService dispositivoService;
+
     @Override
     public OrdemDeServicoDTO criarOrdemDeServico(OrdemDeServicoDTO dto) {
         OrdemDeServico entity = ordemDeServicoMapper.toEntity(dto);

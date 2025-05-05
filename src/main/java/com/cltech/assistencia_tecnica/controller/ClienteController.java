@@ -7,10 +7,11 @@ import com.cltech.assistencia_tecnica.mapper.ClienteMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,19 +20,34 @@ import java.util.stream.Collectors;
 @Tag(name = "Cliente", description = "Endpoints for managing clientes")
 public class ClienteController {
 
-    @Autowired
-    private ClienteService clienteService;
+    private final ClienteService clienteService;
 
-    @Autowired
-    private ClienteMapper clienteMapper;
+    private final ClienteMapper clienteMapper;
+
+    public ClienteController(ClienteService clienteService, ClienteMapper clienteMapper) {
+        this.clienteService = clienteService;
+        this.clienteMapper = clienteMapper;
+    }
 
     @PostMapping
     @Operation(summary = "Create a new cliente")
-    public ResponseEntity<ClienteDTO> criarCliente(@Valid @RequestBody ClienteDTO clienteDTO) {
-        Cliente cliente = clienteMapper.clienteDTOToCliente(clienteDTO);
-        Cliente novoCliente = clienteService.criarCliente(cliente);
-        return ResponseEntity.ok(clienteMapper.clienteToClienteDTO(novoCliente));
+    public ResponseEntity<ClienteDTO> criarCliente(
+            @Valid @RequestBody ClienteDTO dto) {
+
+        Cliente criado = clienteService.criarCliente(
+                clienteMapper.clienteDTOToCliente(dto));
+
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(criado.getId())
+                .toUri();
+
+        return ResponseEntity
+                .created(uri)
+                .body(clienteMapper.clienteToClienteDTO(criado));
     }
+
 
     @GetMapping("/{id}")
     @Operation(summary = "Get a cliente by ID")
