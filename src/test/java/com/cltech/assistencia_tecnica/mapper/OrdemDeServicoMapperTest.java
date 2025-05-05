@@ -65,4 +65,27 @@ class OrdemDeServicoMapperTest {
         assertEquals(dto.getDataConclusao(), ordem.getDataConclusao());
         assertEquals(dto.getDispositivoId(), ordem.getDispositivo().getId());
     }
+
+    @Test
+    void shouldHandleNullStatusInToDto() {
+        OrdemDeServico ordem = new OrdemDeServico();
+        ordem.setStatus(null);
+        ordem.setDispositivo(new Dispositivo());
+
+        OrdemDeServicoDTO dto = mapper.toDto(ordem);
+
+        assertNull(dto.getStatus());
+    }
+
+    @Test
+    void shouldHandleNullStatusInToEntity() {
+        OrdemDeServicoDTO dto = new OrdemDeServicoDTO();
+        dto.setStatus(null);
+        dto.setDispositivoId(1L);
+
+        OrdemDeServico entity = mapper.toEntity(dto);
+
+        assertNull(entity.getStatus());
+    }
+
 }
