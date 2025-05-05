@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,6 +69,40 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErroResponse> handleViolacaoDeIntegridade(DataIntegrityViolationException ex, HttpServletRequest request) {
         return buildErrorResponse("Violação de integridade de dados", HttpStatus.CONFLICT, request.getRequestURI(), List.of(ex.getMostSpecificCause().getMessage()));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErroResponse> handleIllegalArgumentException(
+            IllegalArgumentException ex,
+            HttpServletRequest request
+    ) {
+        ErroResponse erro = ErroResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .erro("Erro de validação")
+                .mensagem(ex.getMessage())
+                .path(request.getRequestURI())
+                .detalhes(Collections.singletonList("Verifique os valores enviados"))
+                .build();
+
+        return ResponseEntity.badRequest().body(erro);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErroResponse> handleRuntimeException(
+            RuntimeException ex,
+            HttpServletRequest request
+    ) {
+        ErroResponse erro = ErroResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .erro("Erro interno")
+                .mensagem(ex.getMessage())
+                .path(request.getRequestURI())
+                .detalhes(Collections.singletonList("Contate o suporte técnico"))
+                .build();
+
+        return ResponseEntity.internalServerError().body(erro);
     }
 
     private ResponseEntity<ErroResponse> buildErrorResponse(String mensagem, HttpStatus status, String path, List<String> detalhes) {
