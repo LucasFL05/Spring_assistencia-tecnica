@@ -19,7 +19,7 @@ public class OrdemDeServicoDTO {
 
     @NotBlank(message = "O status é obrigatório")
     @Pattern(regexp = "ABERTA|EM_ANDAMENTO|CONCLUIDA", flags = Pattern.Flag.CASE_INSENSITIVE, message = "Status inválido. Valores aceitos: ABERTA, EM_ANDAMENTO, CONCLUIDA")
-    private String status;;
+    private String status;
 
     @NotNull(message = "A data de abertura é obrigatória")
     private LocalDateTime dataAbertura;
@@ -28,4 +28,6 @@ public class OrdemDeServicoDTO {
 
     @NotNull(message = "O dispositivo associado é obrigatório")
     private Long dispositivoId;
+
+
 }
