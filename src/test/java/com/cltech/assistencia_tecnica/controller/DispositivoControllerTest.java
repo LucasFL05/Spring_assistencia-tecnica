@@ -49,8 +49,8 @@ class DispositivoControllerTest {
     void createDevice_ValidInput_ShouldReturnCreated() throws Exception {
         ClienteDTO cliente = new ClienteDTO(1L, "Lucas", "lucas@email.com", "123456789");
 
-        DispositivoDTO input = new DispositivoDTO(null, "Notebook", "Dell", "XPS 15", cliente);
-        DispositivoDTO created = new DispositivoDTO(1L, "Notebook", "Dell", "XPS 15", cliente);
+        DispositivoDTO input = new DispositivoDTO(null, "Notebook", "Dell", "XPS 15", 1L);
+        DispositivoDTO created = new DispositivoDTO(1L, "Notebook", "Dell", "XPS 15", 1L);
 
         when(dispositivoService.criarDispositivo(any())).thenReturn(created);
 
@@ -77,7 +77,7 @@ class DispositivoControllerTest {
     @Test
     void getDeviceById_ExistingId_ShouldReturnDevice() throws Exception {
         ClienteDTO cliente = new ClienteDTO(1L, "Lucas", "lucas@email.com", "123456789");
-        DispositivoDTO device = new DispositivoDTO(1L, "Smartphone", "Samsung", "Galaxy S21", cliente);
+        DispositivoDTO device = new DispositivoDTO(1L, "Smartphone", "Samsung", "Galaxy S21", 1L);
         when(dispositivoService.buscarDispositivoPorId(1L)).thenReturn(device);
 
         mockMvc.perform(get("/api/dispositivos/1"))
@@ -101,7 +101,7 @@ class DispositivoControllerTest {
     @Test
     void getAllDevices_ShouldReturnDeviceList() throws Exception {
         ClienteDTO cliente = new ClienteDTO(1L, "Lucas", "lucas@email.com", "123456789");
-        DispositivoDTO device = new DispositivoDTO(1L, "Tablet", "Apple", "iPad Pro", cliente);
+        DispositivoDTO device = new DispositivoDTO(1L, "Tablet", "Apple", "iPad Pro", 1L);
         when(dispositivoService.listarDispositivos()).thenReturn(List.of(device));
 
         mockMvc.perform(get("/api/dispositivos"))
@@ -113,7 +113,7 @@ class DispositivoControllerTest {
     @Test
     void updateDevice_ValidInput_ShouldReturnUpdatedDevice() throws Exception {
         ClienteDTO cliente = new ClienteDTO(1L, "Lucas", "lucas@email.com", "123456789");
-        DispositivoDTO updated = new DispositivoDTO(1L, "Notebook", "Lenovo", "ThinkPad X1", cliente);
+        DispositivoDTO updated = new DispositivoDTO(1L, "Notebook", "Lenovo", "ThinkPad X1", 1L);
         when(dispositivoService.atualizarDispositivo(eq(1L), any())).thenReturn(updated);
 
         mockMvc.perform(put("/api/dispositivos/1")
@@ -126,7 +126,7 @@ class DispositivoControllerTest {
     @Test
     void updateDevice_IdMismatch_ShouldReturnBadRequest() throws Exception {
         ClienteDTO cliente = new ClienteDTO(1L, "Lucas", "lucas@email.com", "123456789");
-        DispositivoDTO input = new DispositivoDTO(2L, "Phone", "Apple", "iPhone 15", cliente);
+        DispositivoDTO input = new DispositivoDTO(2L, "Phone", "Apple", "iPhone 15", 1L);
 
         mockMvc.perform(put("/api/dispositivos/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -158,7 +158,7 @@ class DispositivoControllerTest {
                 .thenThrow(new DataIntegrityViolationException("Violação de chave única"));
 
         ClienteDTO cliente = new ClienteDTO(1L, "Lucas", "lucas@email.com", "123456789");
-        DispositivoDTO input = new DispositivoDTO(null, "Phone", "Apple", "iPhone 15", cliente);
+        DispositivoDTO input = new DispositivoDTO(null, "Phone", "Apple", "iPhone 15", 1L);
 
         mockMvc.perform(post("/api/dispositivos")
                         .contentType(MediaType.APPLICATION_JSON)
