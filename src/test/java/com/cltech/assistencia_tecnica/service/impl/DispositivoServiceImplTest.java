@@ -14,15 +14,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
-
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,23 +41,23 @@ class DispositivoServiceImplTest {
     @InjectMocks
     private DispositivoServiceImpl service;
 
-    private static final Long DEVICE_ID  = 1L;
-    private static final Long CLIENT_ID  = 10L;
+    private static final Long DEVICE_ID = 1L;
+    private static final Long CLIENT_ID = 10L;
 
-    private ClienteDTO    clienteDTO;
+    private ClienteDTO clienteDTO;
     private DispositivoDTO dto;
-    private Cliente       cliente;
-    private Dispositivo   entity;
+    private Cliente cliente;
+    private Dispositivo entity;
 
     @BeforeEach
     void setup() {
         // DTO and nested ClienteDTO
         clienteDTO = new ClienteDTO(CLIENT_ID, "João Silva", "joao@mail.com", "+55 11 99999-0000");
-        dto        = new DispositivoDTO(DEVICE_ID, "Notebook", "Dell", "XPS 13", clienteDTO);
+        dto = new DispositivoDTO(DEVICE_ID, "Notebook", "Dell", "XPS 13", 1L);
 
         // Entity and linked Cliente
         cliente = new Cliente(CLIENT_ID, "João Silva", "joao@mail.com", "+55 11 99999-0000", null);
-        entity  = new Dispositivo(DEVICE_ID, "Notebook", "Dell", "XPS 13", cliente, List.of());
+        entity = new Dispositivo(DEVICE_ID, "Notebook", "Dell", "XPS 13", cliente, List.of());
     }
 
     @Test
@@ -64,7 +65,7 @@ class DispositivoServiceImplTest {
     void shouldCreateAndMap() {
         // Arrange
         when(dispositivoMapper.dispositivoDTOToDispositivo(dto)).thenReturn(entity);
-        when(clienteService.buscarEntidadePorId(CLIENT_ID)).thenReturn(cliente);
+        when(clienteService.buscarEntidadePorId(1L)).thenReturn(cliente);
         when(dispositivoRepository.save(entity)).thenReturn(entity);
         when(dispositivoMapper.dispositivoToDispositivoDTO(entity)).thenReturn(dto);
 
@@ -74,7 +75,7 @@ class DispositivoServiceImplTest {
         // Assert
         assertThat(result).isEqualTo(dto);
         verify(dispositivoMapper).dispositivoDTOToDispositivo(dto);
-        verify(clienteService).buscarEntidadePorId(CLIENT_ID);
+        verify(clienteService).buscarEntidadePorId(1L);
         verify(dispositivoRepository).save(entity);
         verify(dispositivoMapper).dispositivoToDispositivoDTO(entity);
     }
@@ -127,7 +128,7 @@ class DispositivoServiceImplTest {
         // Arrange
         when(dispositivoRepository.findById(DEVICE_ID)).thenReturn(Optional.of(entity));
         when(dispositivoMapper.dispositivoDTOToDispositivo(dto)).thenReturn(entity);
-        when(clienteService.buscarEntidadePorId(CLIENT_ID)).thenReturn(cliente);
+        when(clienteService.buscarEntidadePorId(1L)).thenReturn(cliente);
         when(dispositivoRepository.save(entity)).thenReturn(entity);
         when(dispositivoMapper.dispositivoToDispositivoDTO(entity)).thenReturn(dto);
 
@@ -136,7 +137,7 @@ class DispositivoServiceImplTest {
 
         // Assert
         assertThat(result).isEqualTo(dto);
-        verify(dispositivoRepository).findById(DEVICE_ID);
+        verify(dispositivoRepository).findById(1L);
         verify(dispositivoRepository).save(entity);
     }
 
