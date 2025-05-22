@@ -10,6 +10,7 @@ import com.cltech.assistencia_tecnica.service.OrdemDeServicoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,6 +60,12 @@ public class OrdemDeServicoServiceImpl implements OrdemDeServicoService {
             ordem.setStatus(StatusOrdemServico.valueOf(novoStatus.toUpperCase()));
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Status inválido: " + novoStatus);
+        }
+
+        if ("CONCLUIDA".equalsIgnoreCase(novoStatus)) {
+            ordem.setDataConclusao(LocalDateTime.now());
+        } else {
+            ordem.setDataConclusao(null);
         }
 
         return ordemDeServicoMapper.toDto(ordemDeServicoRepository.save(ordem));
