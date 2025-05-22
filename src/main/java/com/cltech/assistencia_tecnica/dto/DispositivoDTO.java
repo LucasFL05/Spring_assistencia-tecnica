@@ -1,7 +1,6 @@
 package com.cltech.assistencia_tecnica.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -45,22 +44,10 @@ public class DispositivoDTO {
     )
     private String modelo;
 
-    @NotNull(message = "O cliente associado é obrigatório")
-    @Valid
+    @NotNull(message = "O ID do cliente é obrigatório")
     @Schema(
-            description = "Dados do cliente proprietário deste dispositivo"
+            description = "ID do cliente proprietário deste dispositivo",
+            example = "5"
     )
-    private ClienteDTO cliente;
-
-    /**
-     * Auxiliar para permitir que o service associe
-     * o cliente via ID sem precisar de um campo separado.
-     */
-    public Long getClienteId() {
-        return cliente != null ? cliente.getId() : null;
-    }
-
-    public void setClienteId(long l) {
-
-    }
+    private Long clienteId;
 }

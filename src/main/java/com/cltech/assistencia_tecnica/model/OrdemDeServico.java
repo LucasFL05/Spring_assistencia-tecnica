@@ -37,12 +37,16 @@ public class OrdemDeServico {
 
     private LocalDateTime dataConclusao;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "dispositivo_id", nullable = false)
     private Dispositivo dispositivo;
 
     @PrePersist
     public void prePersist() {
         this.dataAbertura = LocalDateTime.now();
+    }
+
+    public void setDispositivo(Dispositivo dispositivo) {
+        this.dispositivo = dispositivo;
     }
 }
